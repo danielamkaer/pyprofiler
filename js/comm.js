@@ -9,6 +9,8 @@ class Socket {
 
     _setupSocket() {
         this.ws = new WebSocket(this.endpoint);
+        this.ws.onopen = evt => { console.log("WebSocket connected"); };
+        this.ws.onclose = evt => { console.log("WebSocket disconnected"); };
         this.ws.onmessage = evt => this.onMessage(evt);
     }
 

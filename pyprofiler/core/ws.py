@@ -6,13 +6,19 @@ class Client:
         self.ws = ws
 
 class WebSocketHandler:
-    def __init__(self, app):
+    def __init__(self, app, ib):
         self.app = app
         self.clients = []
+        self.ib = ib
+
+        self.ib.onInformationChanged += self.onInformationChanged
+
+    async def onInformationChanged(self, info):
+        self.emit_all(['ib', info])
 
     @staticmethod
     def register(app):
-        app.singleton(WebSocketHandler, WebSocketHandler, web.Application)
+        app.singleton(WebSocketHandler, WebSocketHandler, web.Application, pyprofiler.core.InformationBase)
 
     def boot(self):
         print("WebSocketHandler booted")
@@ -28,8 +34,7 @@ class WebSocketHandler:
         cli = Client(ws)
         self.clients.append(cli)
         print("socket opened")
-        ib = self.container[pyprofiler.core.InformationBase]
-        ws.send_json(['ib',{'update':'UPDATE_SET','path':'','item':ib.root}])
+        ws.send_json(['ib',{'update':'UPDATE_SET','path':'','item':self.ib.root}])
         async for msg in ws:
             print(msg)
         print("socket closed")

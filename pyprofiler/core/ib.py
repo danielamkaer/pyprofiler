@@ -78,10 +78,10 @@ class IBDict(dict):
 
 class InformationBase:
 
-    def __init__(self, ws):
+    def __init__(self):
         self.base = self
         self.root = convert({}, self)
-        self.ws = ws
+        self.onInformationChanged = pyprofiler.core.Event()
 
     def resolve(self, item):
         chain = []
@@ -111,11 +111,11 @@ class InformationBase:
             pathlist = res
             path = '.'.join(list(map(str, pathlist)))
         
-        self.ws.emit_all(['ib', {'update':update, 'path':path, 'item': item}])
+        self.container.run_coroutine(self.onInformationChanged({'update':update, 'path':path, 'item': item}))
 
     @staticmethod
     def register(app):
-        app.singleton(InformationBase, InformationBase, pyprofiler.core.WebSocketHandler)
+        app.singleton(InformationBase, InformationBase)
 
     def boot(self):
         print("IB booted")

@@ -8,6 +8,8 @@ let app = new Vue({
     }
 });
 
+window.app = app;
+
 app.ib = {devices: []};
 
 const socket = new Socket('ws://127.0.0.1:8080/ws');
@@ -20,6 +22,7 @@ ib.on('message', (update) => {
     console.log(update);
     switch (update.update) {
         case 'UPDATE_APPEND':
+            console.log("append to",update.path,"value",update.item);
             var pieces = update.path.split('.');
             var o = app.ib;
             pieces.forEach(p => {

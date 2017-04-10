@@ -3,22 +3,19 @@
     <head>
         <title>pyprofiler</title>
         <link rel="stylesheet" href="/node_modules/uikit/dist/css/uikit.min.css" />
+        <script src="/node_modules/jquery/dist/jquery.min.js" type="text/javascript" defer></script>
+        <script src="/node_modules/uikit/dist/js/uikit.min.js" type="text/javascript" defer></script>
+        <script src="/node_modules/uikit/dist/js/uikit-icons.min.js" type="text/javascript" defer></script>
+        <script src="/static/js/bundle.js" type="text/javascript" defer></script>
     </head>
     <body>
-        <div id="app">
-            <ul>
-                <li v-for="device in ib.devices">
-                    {{device.name}}    
-                    <ul>
-                        <li v-for="port in device.ports">
-                            {{port}}
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+        <div id="app" class="uk-container">
+            <div uk-grid>
+                <div class="uk-card uk-card-default uk-width-1-4 uk-card-body" v-for="device in ib.devices">
+                    <h3 class="uk-card-title">{{device.name}}</h3>
+                    {{device.ports}}
+                </div>
+            </div>
         </div>
-<!--        <script src="/node_modules/uikit/dist/js/uikit.min.js" type="text/javascript"></script>
-        <script src="/node_modules/uikit/dist/js/uikit-icons.min.js" type="text/javascript"></script>-->
-        <script src="/static/js/bundle.js" type="text/javascript"></script>
     </body>
 </html>

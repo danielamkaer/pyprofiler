@@ -68,6 +68,9 @@ class Application(Container):
         className.register(self)
         self.boot.append(className)
 
+    def run_coroutine(self, coroutine):
+        self[asyncio.BaseEventLoop].call_soon(lambda: asyncio.ensure_future(coroutine))
+
     def run(self):
         for className in self.boot:
             self[className].boot()
