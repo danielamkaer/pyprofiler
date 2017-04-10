@@ -14,6 +14,16 @@
                 <div class="uk-card uk-card-default uk-width-1-4 uk-card-body" v-for="device in ib.devices">
                     <h3 class="uk-card-title">{{device.name}}</h3>
                     {{device.ports}}
+                    <ul>
+                        <li v-for="service in device.services">
+                            {{service.service}} at port {{service.port}}
+                        </li>
+                    </ul>
+                    <ul>
+                        <li v-for="client in device.clients">
+                            {{client.client}} connecting to {{client.remote}}:{{client.port}}
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
