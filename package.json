@@ -26,5 +26,8 @@
   },
   "browser": {
     "vue": "vue/dist/vue.common.js"
+  },
+  "dependencies": {
+    "jquery": "^3.2.1"
   }
 }
