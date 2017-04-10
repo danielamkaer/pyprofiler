@@ -1,5 +1,6 @@
 import sys
-sys.path.append('/home/daniel/pysniffer')
+import os
+sys.path.append(os.path.realpath('../pysniffer'))
 
 import pyprofiler.core
 
