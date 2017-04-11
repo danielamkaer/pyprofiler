@@ -6,7 +6,7 @@ import asyncio
 import pysniffer.l4.tcp
 
 def create_sniffer():
-    return pysniffer.core.Application(ifname='enp0s25')
+    return pysniffer.core.Application(ifname='wlp3s0')
 
 class SnifferHandler:
 

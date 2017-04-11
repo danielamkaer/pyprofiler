@@ -2,6 +2,7 @@ import pysniffer.l4.tcp
 import pysniffer.l7.textmatch
 import pyprofiler.core
 import logging
+import netaddr
 logger = logging.getLogger(__name__)
 
 class ReportHandler:
@@ -11,11 +12,14 @@ class ReportHandler:
 
     def __init__(self, ib):
         self.ib = ib
+        self.network = netaddr.IPNetwork('172.26.0.0/16')
 
     def boot(self):
         pass
 
     def handleReport(self, report):
+        if not report.host in self.network:
+            return
         if isinstance(report, pysniffer.l4.tcp.OpenPortReport):
             #self.ws.emit_all(['report', report.__dict__])
             if not 'devices' in self.ib.root:
@@ -40,25 +44,27 @@ class ReportHandler:
                 self.ib.root['devices'].append(dev)
         
         elif isinstance(report, pysniffer.l4.udp.OpenPortReport):
-            if not 'devices' in self.ib.root:
-                self.ib.root['devices'] = []
-
-            dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
-            if not dev:
-                dev = {'name': report.host, 'ports':[report.port], 'services': [], 'clients' :[]}
-                self.ib.root['devices'].append(dev)
-            else:
-                if report.port not in dev['ports']:
-                    dev['ports'].append(report.port)
+            pass
+#            if not 'devices' in self.ib.root:
+#                self.ib.root['devices'] = []
+#
+#            dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
+#            if not dev:
+#                dev = {'name': report.host, 'ports':[report.port], 'services': [], 'clients' :[]}
+#                self.ib.root['devices'].append(dev)
+#            else:
+#                if report.port not in dev['ports']:
+#                    dev['ports'].append(report.port)
         
         elif isinstance(report, pysniffer.l4.udp.ConnectsToReport):
-            if not 'devices' in self.ib.root:
-                self.ib.root['devices'] = []
-            
-            dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
-            if not dev:
-                dev = {'name': report.host, 'ports':[], 'services': [], 'clients': []}
-                self.ib.root['devices'].append(dev)
+            pass
+#            if not 'devices' in self.ib.root:
+#                self.ib.root['devices'] = []
+#            
+#            dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
+#            if not dev:
+#                dev = {'name': report.host, 'ports':[], 'services': [], 'clients': []}
+#                self.ib.root['devices'].append(dev)
 
         elif isinstance(report, pysniffer.l7.textmatch.SshServerReport):
             dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
