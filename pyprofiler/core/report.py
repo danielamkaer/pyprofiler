@@ -38,6 +38,27 @@ class ReportHandler:
             if not dev:
                 dev = {'name': report.host, 'ports':[], 'services': [], 'clients': []}
                 self.ib.root['devices'].append(dev)
+        
+        elif isinstance(report, pysniffer.l4.udp.OpenPortReport):
+            if not 'devices' in self.ib.root:
+                self.ib.root['devices'] = []
+
+            dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
+            if not dev:
+                dev = {'name': report.host, 'ports':[report.port], 'services': [], 'clients' :[]}
+                self.ib.root['devices'].append(dev)
+            else:
+                if report.port not in dev['ports']:
+                    dev['ports'].append(report.port)
+        
+        elif isinstance(report, pysniffer.l4.udp.ConnectsToReport):
+            if not 'devices' in self.ib.root:
+                self.ib.root['devices'] = []
+            
+            dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
+            if not dev:
+                dev = {'name': report.host, 'ports':[], 'services': [], 'clients': []}
+                self.ib.root['devices'].append(dev)
 
         elif isinstance(report, pysniffer.l7.textmatch.SshServerReport):
             dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
