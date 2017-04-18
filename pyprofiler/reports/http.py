@@ -13,6 +13,7 @@ class HttpClientReportHandler(pyprofiler.reports.BaseReportHandler):
 
         client = device['clients'].first(proto='tcp', port=report.port, dest=dst)
         client['service'] = 'http-client'
+        client['software'] = report.software
         
 class HttpServerReportHandler(pyprofiler.reports.BaseReportHandler):
     HANDLES = pysniffer.l7.textmatch.HttpServerReport
@@ -20,3 +21,4 @@ class HttpServerReportHandler(pyprofiler.reports.BaseReportHandler):
     def handleReport(self, report, device):
         server = device['servers'].first(proto='tcp', port=report.port)
         server['service'] = 'http-server'
+        server['software'] = report.software

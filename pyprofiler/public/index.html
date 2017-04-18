@@ -17,13 +17,13 @@
                     <h4>Servers:</h4>
                     <ul>
                         <li v-for="server in device.servers">
-                            {{server.proto}}/{{server.port}} {{server.service}}
+                            {{server.proto}}/{{server.port}} {{server.service}} ({{server.software}})
                         </li>
                     </ul>
                     <h4>Clients:</h4>
                     <ul>
                         <li v-for="client in device.clients">
-                            {{client.client}} connecting to {{client.dest}}:{{client.proto}}/{{client.port}} {{client.service}}
+                            {{client.client}} connecting to {{client.dest}}:{{client.proto}}/{{client.port}} {{client.service}} ({{client.software}})
                         </li>
                     </ul>
                 </div>

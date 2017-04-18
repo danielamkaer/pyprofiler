@@ -13,6 +13,7 @@ class SshClientReportHandler(pyprofiler.reports.BaseReportHandler):
 
         client = device['clients'].first(proto='tcp', port=report.port, dest=dst)
         client['service'] = 'ssh-client'
+        client['software'] = report.software
         
 class SshServerReportHandler(pyprofiler.reports.BaseReportHandler):
     HANDLES = pysniffer.l7.textmatch.SshServerReport
@@ -20,3 +21,4 @@ class SshServerReportHandler(pyprofiler.reports.BaseReportHandler):
     def handleReport(self, report, device):
         server = device['servers'].first(proto='tcp', port=report.port)
         server['service'] = 'ssh-server'
+        server['software'] = report.software
