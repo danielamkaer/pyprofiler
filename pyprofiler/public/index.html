@@ -11,24 +11,19 @@
     <body>
         <div id="app" class="uk-container">
             <div uk-grid>
-                <div class="uk-card uk-card-default uk-width-1-4 uk-card-body" v-for="device in ib.devices">
+                <div class="uk-card uk-card-default uk-width-1-2 uk-card-body" v-for="device in ib.devices">
                     <h3 class="uk-card-title">{{device.name}}</h3>
-                    <h4>Listen ports:</h4>
+                    <h4>{{device.host}}</h4>
+                    <h4>Servers:</h4>
                     <ul>
-                        <li v-for="port in device.ports">
-                            TCP/{{port}}
-                        </li>
-                    </ul>
-                    <h4>Services:</h4>
-                    <ul>
-                        <li v-for="service in device.services">
-                            {{service.service}} at port {{service.port}}
+                        <li v-for="server in device.servers">
+                            {{server.proto}}/{{server.port}} {{server.service}}
                         </li>
                     </ul>
                     <h4>Clients:</h4>
                     <ul>
                         <li v-for="client in device.clients">
-                            {{client.client}} connecting to {{client.remote}}:{{client.port}}
+                            {{client.client}} connecting to {{client.dest}}:{{client.proto}}/{{client.port}} {{client.service}}
                         </li>
                     </ul>
                 </div>

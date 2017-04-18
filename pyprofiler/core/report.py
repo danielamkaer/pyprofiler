@@ -14,73 +14,33 @@ class ReportHandler:
         self.ib = ib
         self.network = netaddr.IPNetwork('172.26.0.0/16')
 
+        self.handlers = {}
+
     def boot(self):
         pass
 
+    def registerHandler(self, report, handler):
+        self.handlers[report] = handler
+    
     def handleReport(self, report):
         if not report.host in self.network:
             return
-        if isinstance(report, pysniffer.l4.tcp.OpenPortReport):
-            #self.ws.emit_all(['report', report.__dict__])
-            if not 'devices' in self.ib.root:
-                self.ib.root['devices'] = []
-            
-            dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
-            if not dev:
-                dev = {'name': report.host, 'ports':[report.port], 'services': [], 'clients': []}
-                self.ib.root['devices'].append(dev)
-            else:
-                if report.port not in dev['ports']:
-                    dev['ports'].append(report.port)
 
-        elif isinstance(report, pysniffer.l4.tcp.ConnectsToReport):
-            #self.ws.emit_all(['report', report.__dict__])
-            if not 'devices' in self.ib.root:
-                self.ib.root['devices'] = []
-            
-            dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
-            if not dev:
-                dev = {'name': report.host, 'ports':[], 'services': [], 'clients': []}
-                self.ib.root['devices'].append(dev)
+        if not 'devices' in self.ib.root:
+            self.ib.root['devices'] = []
+
+        device = self.ib.root['devices'].first(host=report.host)
         
-        elif isinstance(report, pysniffer.l4.udp.OpenPortReport):
-            pass
-#            if not 'devices' in self.ib.root:
-#                self.ib.root['devices'] = []
-#
-#            dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
-#            if not dev:
-#                dev = {'name': report.host, 'ports':[report.port], 'services': [], 'clients' :[]}
-#                self.ib.root['devices'].append(dev)
-#            else:
-#                if report.port not in dev['ports']:
-#                    dev['ports'].append(report.port)
         
-        elif isinstance(report, pysniffer.l4.udp.ConnectsToReport):
-            pass
-#            if not 'devices' in self.ib.root:
-#                self.ib.root['devices'] = []
-#            
-#            dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
-#            if not dev:
-#                dev = {'name': report.host, 'ports':[], 'services': [], 'clients': []}
-#                self.ib.root['devices'].append(dev)
+        #next((x for x in self.ib.root['devices'] if x['host'] == report.host), None)
+        if device == None:
+            device = {"host": report.host, "name": "Unknown Device", "servers": [], "clients": [], "dns-queries": []}
+            self.ib.root['devices'].append(device)
+            device = next((x for x in self.ib.root['devices'] if x['host'] == report.host), None)
 
-        elif isinstance(report, pysniffer.l7.textmatch.SshServerReport):
-            dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
-            dev['services'].append({'service':'ssh-server', 'port':report.port})
-
-        elif isinstance(report, pysniffer.l7.textmatch.HttpServerReport):
-            dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
-            dev['services'].append({'service':'http-server', 'port':report.port})
-
-        elif isinstance(report, pysniffer.l7.textmatch.HttpClientReport):
-            dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
-            dev['clients'].append({'client':'http-client', 'remote': report.dest, 'port':report.port})
-
-        elif isinstance(report, pysniffer.l7.textmatch.SshClientReport):
-            dev = next((x for x in self.ib.root['devices'] if x['name'] == report.host), None)
-            dev['clients'].append({'client':'ssh-client', 'remote': report.dest, 'port':report.port})
-
+        if report.__class__ in self.handlers:
+            self.handlers[report.__class__](report, device)
         else:
             logger.error(f"Unhandled report: {type(report)}")
+
+        return

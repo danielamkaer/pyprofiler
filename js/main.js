@@ -33,6 +33,14 @@ ib.on('message', (update) => {
         case 'UPDATE_SET':
             if (update.path == '') {
                 app.ib = update.item;
+            } else {
+                var pieces = update.path.split('.');
+                var key = pieces.pop();
+                var o = app.ib;
+                pieces.forEach(p => {
+                    o = o[p];
+                });
+                o[key] = update.item;
             }
             break;
 

@@ -50,6 +50,26 @@ class IBList(list):
     def remove(self, item):
         super().item(index)
         self.base.updated(self, index, None, UPDATE_REMOVE)
+    
+    def first(self, **search):
+        for item in self:
+            for key in search:
+                if key not in item or item[key] != search[key]:
+                    break
+            # nb. for/else
+            else:
+                return item
+
+        return None
+
+    def firstOrCreate(self, **search):
+        item = self.first(**search)
+        if item:
+            return item
+        else:
+            item = convert(search, self)
+            self.append(item)
+            return item
 
     def __repr__(self):
         return f'IBList{super().__repr__()}'
@@ -63,7 +83,7 @@ class IBDict(dict):
 
     def __setitem__(self, key, val):
         val = convert(val, self)
-        if val in self.values():
+        if val in self.values() and self[key] != val:
             print(f"{val} already in {self}")
         self.base.updated(self, key, val, UPDATE_SET)
         super().__setitem__(key, val)
@@ -75,6 +95,11 @@ class IBDict(dict):
         idx = list(self.values()).index(val)
         return list(self.keys())[idx]
 
+    def incr(self, key, val=1):
+        if key in self:
+            self[key] = self[key] + val
+        else:
+            self[key] = val
 
 class InformationBase:
 
