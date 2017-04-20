@@ -1,5 +1,6 @@
 import pyprofiler.core
 from aiohttp import web
+import json
 
 class Client:
     def __init__(self, ws):
@@ -23,6 +24,10 @@ class WebSocketHandler:
     def boot(self):
         print("WebSocketHandler booted")
         self.app.router.add_get('/ws', self.websocket_handler)
+
+    async def shutdown(self):
+        for cli in self.clients:
+            await cli.ws.close()
 
     def emit_all(self, msg):
         for cli in self.clients:

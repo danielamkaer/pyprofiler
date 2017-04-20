@@ -32,3 +32,7 @@ class SnifferHandler:
     def boot(self):
         self.thread = threading.Thread(target=self.sniffer.run)
         self.thread.start()
+
+    def shutdown(self):
+        self.sniffer.stop()
+        self.thread.join()

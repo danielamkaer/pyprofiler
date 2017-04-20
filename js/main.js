@@ -17,12 +17,13 @@ const socket = new Socket('ws://127.0.0.1:8080/ws');
 const log = socket.registerProtocol('log');
 const report = socket.registerProtocol('report');
 const ib = socket.registerProtocol('ib');
+const rpc = socket.registerProtocol('rpc');
+
+window.rpc = rpc;
 
 ib.on('message', (update) => {
-    console.log(update);
     switch (update.update) {
         case 'UPDATE_APPEND':
-            console.log("append to",update.path,"value",update.item);
             var pieces = update.path.split('.');
             var o = app.ib;
             pieces.forEach(p => {

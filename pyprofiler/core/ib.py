@@ -1,4 +1,5 @@
 import pyprofiler.core
+import pickle
 
 
 def convert(obj, parent):
@@ -71,9 +72,8 @@ class IBList(list):
             self.append(item)
             return item
 
-    def __repr__(self):
-        return f'IBList{super().__repr__()}'
-
+    def serialize(self):
+        return [x.serialize() if isinstance(x, (IBDict, IBList)) else x for x in self]
 
 class IBDict(dict):
     def __init__(self, items, parent=None, base=None):
@@ -100,6 +100,9 @@ class IBDict(dict):
             self[key] = self[key] + val
         else:
             self[key] = val
+    
+    def serialize(self):
+        return {k:(self[k].serialize() if isinstance(self[k], (IBDict, IBList)) else self[k]) for k in self}
 
 class InformationBase:
 
@@ -144,3 +147,20 @@ class InformationBase:
 
     def boot(self):
         print("IB booted")
+        try:
+            with open('ib.bin', 'rb') as file:
+                print("loading")
+                loaded = pickle.load(file)
+                self.root = convert(loaded, self)
+                print("done loading")
+        except IOError:
+            pass
+        except EOFError:
+            pass
+
+    def shutdown(self):
+        try:
+            with open('ib.bin', 'wb') as file:
+                pickle.dump(self.root.serialize(), file)
+        except AttributeError as e:
+            print(e)

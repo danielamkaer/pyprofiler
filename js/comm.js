@@ -53,7 +53,6 @@ class Protocol extends EventEmitter {
     }
 
     handleMessage(data) {
-        console.log("proto: ", this.name, " received data.");
         this.emit('message', data);
     }
 

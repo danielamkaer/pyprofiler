@@ -81,7 +81,34 @@ class Application(Container):
 #        app.router.add_static('/', path='pyprofiler/public', name='static')
 #
         print(f"run_app({self[web.Application]})")
-        web.run_app(self[web.Application], host='127.0.0.1', port=8080)
+
+        app = self[web.Application]
+        handler = app.make_handler()
+        loop = self[asyncio.BaseEventLoop]
+        loop.run_until_complete(app.startup())
+        server = loop.run_until_complete(loop.create_server(handler, '127.0.0.1', 8080, backlog=128))
+
+        try:
+            #web.run_app(self[web.Application], host='127.0.0.1', port=8080)
+            loop.run_forever()
+        except KeyboardInterrupt:
+            print("Keyboard Interrupt")
+
+        for className in self.boot:
+            o = self[className]
+            if hasattr(o, 'shutdown') and callable(getattr(o, 'shutdown')):
+                if asyncio.iscoroutinefunction(o.shutdown):
+                    loop.run_until_complete(o.shutdown())
+                else:
+                    o.shutdown()
+
+        server.close()
+        loop.run_until_complete(server.wait_closed())
+        loop.run_until_complete(app.shutdown())
+        loop.run_until_complete(handler.shutdown())
+        loop.run_until_complete(app.cleanup())
+
+        loop.close()
 
 class WebApplication:
 
