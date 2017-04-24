@@ -9,6 +9,7 @@ import pyprofiler.reports.dns
 import pyprofiler.reports.http
 import pyprofiler.reports.ssh
 import pyprofiler.reports.ssl
+import pyprofiler.reports.dhcp
 
 app = pyprofiler.core.Application(sys.argv)
 app.register(pyprofiler.core.WebApplication)
@@ -26,4 +27,5 @@ app.register(pyprofiler.reports.http.HttpServerReportHandler)
 app.register(pyprofiler.reports.ssh.SshClientReportHandler)
 app.register(pyprofiler.reports.ssh.SshServerReportHandler)
 app.register(pyprofiler.reports.ssl.SslClientReportHandler)
+app.register(pyprofiler.reports.dhcp.DhcpReportHandler)
 app.run()
