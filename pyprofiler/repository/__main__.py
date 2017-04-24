@@ -1,45 +1,29 @@
 import numpy as np
 from pyprofiler.repository.model import Model
 from pyprofiler.repository.util import features_from_profile
+import pickle
+import json
+import sys
 
-m = Model()
-#
-#a = m.fromFeatures(['tcp:google.dk:443', 'tcp:facebook.com:443'])
-#m.data = np.concatenate((m.data, a), axis=0)
-#b = m.fromFeatures(['tcp:bt.dk:443', 'tcp:jp.com:443'])
-#m.data = np.concatenate((m.data, b), axis=0)
-#c = m.fromFeatures(['tcp:tado.com:443', 'tcp:danalock.com:443'])
-#p1 = m.crossProduct(a)
-#p2 = m.crossProduct(b)
-#p3 = m.crossProduct(c)
-#print(p1)
-#print(p2)
-#print(p3)
+try:
+    with open('model.bin','rb') as file:
+        m = pickle.load(file)
 
-tado = {
-    "clients": [
-        {"proto": "tcp", "dest": "i.my.tado.com", "port": 443}
-    ],
-    "servers": []
-}
+except IOError:
+    m = Model()
 
-hue = {
-    "clients": [
-        {"proto": "tcp", "dest": "bridge.meethue.com", "port": 443}
-    ],
-    "servers": [
-        { "proto": "tcp", "port": 8080 }
-    ]
-}
+profile = json.load(sys.stdin)
+features = features_from_profile(profile)
+model_features = m.fromFeatures(features)
+cross = m.crossProduct(model_features)
+if cross.shape[0] > 0:
+    print(f"cross: {cross}")
+    i = np.argmax(cross)
+    print(f"i: {i}")
+    if cross[i] != 1:
+        m.addProfile(model_features)
+else:
+    m.addProfile(model_features)
 
-tado_features = m.fromFeatures(features_from_profile(tado))
-m.addProfile(tado_features)
-hue_features = m.fromFeatures(features_from_profile(hue))
-m.addProfile(hue_features)
-print(m.data)
-
-tado_features = m.fromFeatures(features_from_profile(tado))
-hue_features = m.fromFeatures(features_from_profile(hue))
-
-print(m.crossProduct(tado_features))
-print(m.crossProduct(hue_features))
+with open('model.bin','wb') as file:
+    pickle.dump(m, file)

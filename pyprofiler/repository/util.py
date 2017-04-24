@@ -5,4 +5,7 @@ def features_from_profile(profile):
     for client in profile['clients']:
         features.append(f"{client['proto']}:{client['dest']}:{client['port']}")
 
+    if profile['name'] != 'Unknown Device':
+        features.append(f"hostname:{profile['name']}")
+
     return features
