@@ -40,7 +40,16 @@ class ReportHandler:
 
         if report.__class__ in self.handlers:
             self.handlers[report.__class__](report, device)
+            self.printReport(report)
         else:
             logger.error(f"Unhandled report: {type(report)}")
 
         return
+
+    def printReport(self, report):
+        print(f'{report.__module__}.{report.__class__.__name__}:')
+        #print(f'{report.__dict__}')
+        for key in report.__dict__:
+            print(f'    {key}:')
+            print(f'        {report.__dict__[key]}')
+        print()
