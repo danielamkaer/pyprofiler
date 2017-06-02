@@ -26,6 +26,12 @@
                             {{client.client}} connecting to {{client.dest}}:{{client.proto}}/{{client.port}} {{client.service}} ({{client.software}})
                         </li>
                     </ul>
+                    <h4>DNS queries:</h4>
+                    <ul>
+                        <li v-for="query in device['dns-queries']">
+                            {{query.query}}: {{query.response.join(', ')}}
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
